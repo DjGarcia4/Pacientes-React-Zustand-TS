@@ -18,9 +18,11 @@ const PatientList = () => {
               Pacientes y Citas
             </span>
           </p>
-          {patients.map((patient) => (
-            <PatientDetails key={patient.id} patient={patient} />
-          ))}
+          <div className=" max-h-[600px] overflow-scroll">
+            {patients.map((patient) => (
+              <PatientDetails key={patient.id} patient={patient} />
+            ))}
+          </div>
         </>
       ) : (
         <>

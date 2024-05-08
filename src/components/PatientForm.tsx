@@ -2,19 +2,42 @@ import { useForm } from "react-hook-form";
 import Error from "./Error";
 import { DraftPatient } from "../types";
 import { usePatientStore } from "../store";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function PatientForm() {
-  const { addPatient } = usePatientStore();
+  const { addPatient, updatePatient, activeId, patients } = usePatientStore();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<DraftPatient>();
 
+  useEffect(() => {
+    const activePatient = patients.filter(
+      (patient) => patient.id === activeId
+    )[0];
+    if (activePatient) {
+      setValue("name", activePatient.name);
+      setValue("caretaker", activePatient.caretaker);
+      setValue("email", activePatient.email);
+      setValue("date", activePatient.date);
+      setValue("symptoms", activePatient.symptoms);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeId]);
+
   const registerPacient = (data: DraftPatient) => {
-    addPatient(data);
+    if (activeId) {
+      updatePatient(data);
+      toast.success("Paciente Actualizado Correctamente");
+    } else {
+      addPatient(data);
+      toast.success("Paciente Registrado Correctamente");
+    }
     reset();
   };
   return (
@@ -37,7 +60,7 @@ export default function PatientForm() {
           </label>
           <input
             id="name"
-            className="w-full p-3  border border-gray-100"
+            className="w-full p-3  border border-gray-100 rounded-lg"
             type="text"
             placeholder="Nombre del Paciente"
             {...register("name", {
@@ -53,7 +76,7 @@ export default function PatientForm() {
           </label>
           <input
             id="caretaker"
-            className="w-full p-3  border border-gray-100"
+            className="w-full p-3  border border-gray-100 rounded-lg"
             type="text"
             placeholder="Nombre del Propietario"
             {...register("caretaker", {
@@ -69,7 +92,7 @@ export default function PatientForm() {
           </label>
           <input
             id="email"
-            className="w-full p-3  border border-gray-100"
+            className="w-full p-3  border border-gray-100 rounded-lg"
             type="email"
             placeholder="Email de Registro"
             {...register("email", {
@@ -89,7 +112,7 @@ export default function PatientForm() {
           </label>
           <input
             id="date"
-            className="w-full p-3  border border-gray-100"
+            className="w-full p-3  border border-gray-100 rounded-lg"
             type="date"
             {...register("date", {
               required: "La fecha de alta es obligatoria",
@@ -104,7 +127,7 @@ export default function PatientForm() {
           </label>
           <textarea
             id="symptoms"
-            className="w-full p-3  border border-gray-100"
+            className="w-full p-3  border border-gray-100 rounded-lg"
             placeholder="Síntomas del paciente"
             {...register("symptoms", {
               required: "Los sintomas son obligatorios",
@@ -115,7 +138,7 @@ export default function PatientForm() {
 
         <input
           type="submit"
-          className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-colors"
+          className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-colors rounded-lg"
           value="Guardar Paciente"
         />
       </form>
